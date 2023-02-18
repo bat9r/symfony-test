@@ -6,12 +6,6 @@ on:
         branches:
             - main
 
-env:
-    fail-fast: true
-    PHPUNIT_FLAGS: "-v"
-    SYMFONY_PHPUNIT_DIR: "$HOME/symfony-bridge/.phpunit"
-    SYMFONY_DEPRECATIONS_HELPER: 7
-
 permissions:
     contents: read
 
@@ -19,7 +13,6 @@ jobs:
     test:
         name: "${{ matrix.operating-system }} / PHP ${{ matrix.php-version }}"
         runs-on: ${{ matrix.operating-system }}
-        continue-on-error: false
 
         strategy:
             matrix:
@@ -27,8 +20,20 @@ jobs:
                 php-version: ['8.1']
 
         steps:
+            - name: Setup PHP Action
+              # You may pin to the exact commit or the version.
+              # uses: shivammathur/setup-php@d30ad8b1843ace22e6698ab99bbafaa747b6bd0d
+              uses: shivammathur/setup-php@2.24.0
+              with:
+                # Setup PHP version.
+                php-version: ${{ matrix.php-version }}
+                tools: composer
+                
             - name: "Checkout code"
               uses: actions/checkout@v3
-
+              
+            - name: "Install deps"
+              run: php composer.phar install
+              
             - name: "Tests"
               run: bin/phpunit

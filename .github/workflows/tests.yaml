@@ -6,12 +6,6 @@ on:
         branches:
             - main
 
-env:
-    fail-fast: true
-    PHPUNIT_FLAGS: "-v"
-    SYMFONY_PHPUNIT_DIR: "$HOME/symfony-bridge/.phpunit"
-    SYMFONY_DEPRECATIONS_HELPER: 7
-
 permissions:
     contents: read
 
@@ -19,7 +13,8 @@ jobs:
     test:
         name: "${{ matrix.operating-system }} / PHP ${{ matrix.php-version }}"
         runs-on: ${{ matrix.operating-system }}
-        continue-on-error: false
+        container:
+          image: php:8.1.16-cli
 
         strategy:
             matrix:
@@ -29,6 +24,9 @@ jobs:
         steps:
             - name: "Checkout code"
               uses: actions/checkout@v3
-
+              
+            - name: "Install deps"
+              run: php composer.phar install
+              
             - name: "Tests"
               run: bin/phpunit

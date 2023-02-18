@@ -1,0 +1,49 @@
+#name: 'Terraform dev'
+#
+#on:
+#  push:
+#    branches:
+#      - neverexist
+#
+#permissions:
+#  contents: read
+#
+#concurrency:
+#  group: ${{ github.workflow }}
+#
+#jobs:
+#  terraform:
+#    env:
+#      TF_VAR_VARS_FROM_SECRET: ${{ secrets.TF_VAR_VARS_FROM_SECRET }}
+#      REGISTRY: some-registry
+#      REPOSITORY: some-registry
+#      IMAGE_TAG: image-tag
+#    name: 'Terraform'
+#    runs-on: ubuntu
+#    environment: dev
+#
+#    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+#    defaults:
+#      run:
+#        shell: bash
+#
+#    steps:
+#      # Checkout the repository to the GitHub Actions runner
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#
+#      - name: "Configure GCP gcreds"
+#
+#      - name: Build, tag, and push docker image 
+#        run: |
+#          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+#          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+# 
+#          
+#      # Generates an execution plan for Terraform and apply
+#      - name: Terraform
+#        run: |
+#          terraform init
+#          terraform workspace select default
+#          terraform plan -input=false -var-file=env/dev/values.tfvars -var="docker_image=$REGISTRY/$REPOSITORY:$IMAGE_TAG"
+#          terraform apply -auto-approve -input=false -var-file=env/dev/values.tfvars -var="docker_image=$REGISTRY/$REPOSITORY:$IMAGE_TAG"
